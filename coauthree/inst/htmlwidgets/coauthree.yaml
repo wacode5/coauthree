@@ -1,0 +1,6 @@
+dependencies:
+ - name: coauthree
+   version: 0.0.0.900
+   src: htmlwidgets/lib/coauthree
+   script:
+     - coauthree.min.js

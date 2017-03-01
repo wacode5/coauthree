@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Interactive Globe: Small Arms Imports &amp; Exports</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+
+    <!-- import and start js-->
+	<body id="dataviz">
+    <script src="app.js"></script>
+
+    <!-- define custom shaders -->
+    <script type="x-shader/x-vertex" id="vertexshader">
+        // varying vec3 vNormal;
+        varying vec2 vUv;
+
+        void main(){
+            vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+            gl_Position = projectionMatrix * mvPosition;
+           // vNormal = normalize( normalMatrix * normal );
+            vUv = uv;
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="fragmentshader">
+        uniform sampler2D mapIndex;
+        uniform sampler2D lookup;
+        uniform sampler2D outline;
+        uniform float outlineLevel;
+        // varying vec3 vNormal;
+        varying vec2 vUv;
+
+
+        void main(){
+            vec4 mapColor = texture2D( mapIndex, vUv );
+            float indexedColor = mapColor.x;
+            vec2 lookupUV = vec2( indexedColor, 0. );
+            vec4 lookupColor = texture2D( lookup, lookupUV );
+            float mask = lookupColor.x + ( 1. -outlineLevel ) * indexedColor;
+            mask = clamp( mask, 0., 1. );
+            float outlineColor = texture2D( outline, vUv ).x * outlineLevel;
+            float diffuse = mask + outlineColor;
+            gl_FragColor = vec4( vec3(diffuse), 1. );
+        }
+
+    </script>
+    <div>Hello World!!</div>
+	</body>
+</html>
